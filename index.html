@@ -78,7 +78,7 @@
         <button type="submit">Submit</button>
     </form>
 
-    <!-- Fireworks Canvas -->
+     <!-- Fireworks Canvas -->
     <canvas id="fireworks"></canvas>
 
     <script>
@@ -134,26 +134,39 @@
         }
 
         let fireworks = [];
+        let fireworksActive = true;
 
         function createFirework() {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height / 2;
-            fireworks.push(new Firework(x, y));
+            if (fireworksActive) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height / 2;
+                fireworks.push(new Firework(x, y));
+            }
         }
 
         function animate() {
+            if (!fireworksActive) return;  // Stop fireworks after 2 seconds
+
             ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             fireworks.forEach((firework, index) => {
                 firework.update();
                 firework.draw();
                 if (firework.particles.length === 0) fireworks.splice(index, 1);
             });
+
             requestAnimationFrame(animate);
         }
 
-        setInterval(createFirework, 2);
+        setInterval(createFirework, 100); // Create fireworks every 100ms
         animate();
+
+        // Stop fireworks after 2 seconds
+        setTimeout(() => {
+            fireworksActive = false;
+        }, 2000);
+
     </script>
 
 </body>
