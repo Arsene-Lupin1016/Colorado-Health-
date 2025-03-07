@@ -19,17 +19,22 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin-top: 10%;
-            background-color: #f8f9fa;
+            background-color: #000;
+            color: white;
+            overflow: hidden;
         }
         h1 {
-            color: #d9534f;
+            color: #ff4747;
         }
         p {
             font-size: 18px;
         }
         form {
             margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
         }
         input, textarea {
             width: 80%;
@@ -37,6 +42,7 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            background: white;
         }
         button {
             background-color: #28a745;
@@ -49,9 +55,18 @@
         button:hover {
             background-color: #218838;
         }
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+
     <h1>Welcome!</h1>
     <p>You have clicked on a fake phishing link.</p>
     <p>This is being used for a project of mine. Thank you!</p>
@@ -62,5 +77,85 @@
         <textarea name="Response" rows="4" placeholder="How and why did you click the link?" required></textarea><br>
         <button type="submit">Submit</button>
     </form>
+
+    <!-- Fireworks Canvas -->
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Firework {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                this.particles = [];
+                for (let i = 0; i < 50; i++) {
+                    this.particles.push(new Particle(this.x, this.y, this.color));
+                }
+            }
+            update() {
+                this.particles.forEach((particle, index) => {
+                    particle.update();
+                    if (particle.life <= 0) this.particles.splice(index, 1);
+                });
+            }
+            draw() {
+                this.particles.forEach(particle => particle.draw());
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 4;
+                this.speedY = (Math.random() - 0.5) * 4;
+                this.gravity = 0.05;
+                this.life = 100;
+                this.color = color;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.speedY += this.gravity;
+                this.life--;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        let fireworks = [];
+
+        function createFirework() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height / 2;
+            fireworks.push(new Firework(x, y));
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            fireworks.forEach((firework, index) => {
+                firework.update();
+                firework.draw();
+                if (firework.particles.length === 0) fireworks.splice(index, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+
+        setInterval(createFirework, 1000);
+        animate();
+    </script>
+
 </body>
 </html>
+
