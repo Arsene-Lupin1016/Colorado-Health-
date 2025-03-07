@@ -118,18 +118,23 @@
                 this.gravity = 0.05;
                 this.life = 100;
                 this.color = color;
+                this.opacity = 1;  // Full opacity at the start
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
                 this.speedY += this.gravity;
                 this.life--;
+                this.opacity -= 0.01;  // Decrease opacity over time
+                if (this.opacity < 0) this.opacity = 0;  // Prevent opacity from going negative
             }
             draw() {
                 ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;  // Apply opacity for fading effect
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
+                ctx.globalAlpha = 1;  // Reset alpha for other objects
             }
         }
 
@@ -145,7 +150,7 @@
         }
 
         function animate() {
-            if (!fireworksActive) return;  // Stop fireworks after 2 seconds
+            if (!fireworksActive && fireworks.length === 0) return;  // Stop if no fireworks are left
 
             ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
